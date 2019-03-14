@@ -234,7 +234,7 @@ p <- p + theme(axis.text.x = element_text(size=8, angle=45, face="bold"))
 p
 
 ## TAZ/CAMTA1 vs CAMTA1
-res_tc_camta1 <- results(ddsTxi, contrast = c("cond","tc_camta1","EV"))
+res_tc_camta1 <- results(ddsTxi, contrast = c("cond","TC","CAMTA1"))
 res_tc_camta1 <- na.omit(res_tc_camta1)  #drop NA rows
 res_tc_camta1_sig <- res_tc_camta1[res_tc_camta1$padj < 0.05 & res_tc_camta1$baseMean > 5.0,]
 res_tc_camta1_ord <- res_tc_camta1_sig[order(res_tc_camta1_sig$padj),]
@@ -244,16 +244,22 @@ png("tc_camta1_DE_volcano.png", 1200, 1500, pointsize=20, res=100)
 volcanoplot(res_tc_camta1_ord, main = "Volcano Plot: DE genes across tc_camta1 vs ev", lfcthresh=2, sigthresh=0.05, textcx=.5, xlim=c(-8, 8), ylim = c(3,120))
 dev.off()
 
-p <- degPlot(ddsTxi, xs = "cond", res = res_tc_camta1_ord, n = 6, group = "cond", 
-             groupLab = "Condition")
-
-p <- p + theme_dark()
-p <- p + theme(axis.text.x = element_text(size=8, angle=45, face="bold"))
-p
-
 
 ## TAZ/CAMTA1 vs TAZ
+res_tc_taz4sa <- results(ddsTxi, contrast = c("cond","TC","TAZ4SA"))
+res_tc_taz4sa <- na.omit(res_tc_taz4sa)  #drop NA rows
+res_tc_taz4sa_sig <- res_tc_taz4sa[res_tc_taz4sa$padj < 0.05 & res_tc_taz4sa$baseMean > 5.0,]
+res_tc_taz4sa_ord <- res_tc_taz4sa_sig[order(res_tc_taz4sa_sig$padj),]
+res_tc_taz4sa_ord$ext_gene <- anno[row.names(res_tc_taz4sa_ord), "gene_name"]
 
+png("tc_taz4sa_DE_volcano.png", 1200, 1500, pointsize=20, res=100)
+volcanoplot(res_tc_taz4sa_ord, main = "Volcano Plot: DE genes across tc_taz4sa vs ev", lfcthresh=2, sigthresh=0.05, textcx=.5, xlim=c(-8, 8), ylim = c(3,120))
+dev.off()
 
-
-
+## write out gene lists
+my_cols <- c("baseMean","log2FoldChange","padj","ext_gene")
+write.csv(x = res_camta1_ord[,my_cols], file = "DE_genes_CAMTA1_vs_EVsub_padj_0p05.csv")
+write.csv(x = res_taz_ord[,my_cols], file = "DE_genes_TAZ4SA_vs_EV_padj_0p05.csv")
+write.csv(x = res_tc_ord[,my_cols], file = "DE_genes_TC_vs_EV_padj_0p05.csv")
+write.csv(x = res_yap5sa_ord[,my_cols], file = "DE_genes_YAP_vs_EV_padj_0p05.csv")
+write.csv(x = res_tfe3_ord[,my_cols], file = "DE_genes_TFE3_vs_EV_padj_0p05.csv")
